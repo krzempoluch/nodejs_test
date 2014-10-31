@@ -1,0 +1,11 @@
+{
+	"EntityName": "Project",
+	"EntityAtributes":{
+		"name" : "VARCHAR(55)",
+		"jira_URL" : "VARCHAR(55)",
+		"start_date" : "DATETIME"
+	},
+	"EntityRelations":{
+		"hasMany": "MWD"
+	}
+}

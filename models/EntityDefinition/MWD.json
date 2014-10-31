@@ -1,0 +1,10 @@
+{
+	"EntityName": "MWD",
+	"EntityAtributes":{
+		"name" : "VARCHAR(55)",
+		"issueDate" : "DATETIME"
+	},
+	"EntityRelations":{
+		"hasMany": "Project"
+	}
+}
