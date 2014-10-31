@@ -52,7 +52,8 @@
  </script> 
  <script type="text/ng-template" id="/mwd.html">
 		<div class="page-header">
-			<h1>Mwd</h1>
+			<h1 style=" display: inline; ">Mwd</h1>
+			<button class="btn btn-primary" style=" float: right; " ng-click="openAdd()">+ Dodaj</button>
 		</div>
 		<div ui-grid="gridOptions" class="grid"></div>
  </script> 
@@ -68,6 +69,32 @@
 			</div>
             <p class="input-group">
               	<input type="text" class="form-control" placeholder="Data rozpoczecia projektu" datepicker-popup="{{format}}" ng-model="start_date" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              	<span class="input-group-btn">
+              		  <button type="button" class="btn btn-default" ng-click="openDP($event)"><i class="glyphicon glyphicon-calendar" style="line-height: 1.45;"></i></button>
+              	</span>
+            </p>
+			<div class="btn-group" dropdown is-open="status.isopen">
+      		<button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
+        	Dodaj MWD <span class="caret"></span>
+      		</button>
+     		 <ul class="dropdown-menu" role="menu">
+				<div data-ng-repeat="mwd in mwds">
+        			<li><a href="#">{{mwd.name}}</a></li>
+				</div>
+      		</ul>
+    		</div>
+			<button type="submit" class="btn btn-primary">Dodaj</button>
+		</form>
+    </script>
+    <script type="text/ng-template" id="addMwd.html">
+        <form ng-submit="addMwd()" style="padding: 15px;">
+			<h3>Dodaj mwd</h3>
+
+			<div class="form-group">
+				<input type="text" class="form-control" placeholder="Nazwa" ng-model="name"></input>
+			</div>
+            <p class="input-group">
+              	<input type="text" class="form-control" placeholder="issueDate" datepicker-popup="{{format}}" ng-model="issueDate" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
               	<span class="input-group-btn">
               		  <button type="button" class="btn btn-default" ng-click="openDP($event)"><i class="glyphicon glyphicon-calendar" style="line-height: 1.45;"></i></button>
               	</span>

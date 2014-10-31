@@ -24,6 +24,16 @@ function($stateProvider, $urlRouterProvider) {
     	    return mwds.getAll();
     	  }]
     	}
+	})
+	.state('homeAddProject', {
+	  url: '/addProject.html',
+	  templateUrl: '/addProject.html',
+	  controller: 'ProjectModalCtrl',
+	  resolve: {
+    	  postPromise: ['mwds', function(mwds){
+    	    return mwds.getAll();
+    	  }]
+    	}
 	});
   
   $urlRouterProvider.otherwise('home');
@@ -67,6 +77,11 @@ function($stateProvider, $urlRouterProvider) {
 			angular.copy(data, o.mwds);
 		});
 	};
+	o.create = function(post) {
+		return $http.post('/mwds', post).success(function(data) {
+			o.mwds.push(data);
+		});
+	};
 	return o;
 } ])
 .controller('MainCtrl',[ 
@@ -82,25 +97,34 @@ function($scope, $modal, projects) {
 	$scope.openAdd = function (size) {
 	    var modalInstance = $modal.open({
 	      templateUrl: 'addProject.html',
-	      controller: 'ModalCtrl'
+	      controller: 'ProjectModalCtrl'
 	      })
 	};
 } ])
 .controller('MwdCtrl', [
 '$scope',
+'$modal',
 'mwds',
-function($scope, mwds){
-	$scope.mwds = mwds.mwds;
+function($scope, $modal, mwds){
+	$scope.mwds = mwds.getAll();
 	$scope.gridOptions = {
 			  enableScrollbars: false,
 			  data: $scope.mwds
 			};
+	$scope.openAdd = function (size) {
+	    var modalInstance = $modal.open({
+	      templateUrl: 'addMwd.html',
+	      controller: 'MwdModalCtrl'
+	      })
+	};
 }])
-.controller('ModalCtrl', [
+.controller('ProjectModalCtrl', [
 '$scope',
 '$modalInstance',
 'projects',
-function($scope, $modalInstance, projects) {
+'mwds',
+function($scope, $modalInstance, projects, mwds) {
+	$scope.mwds = mwds.getAll();
 	$scope.today = function() {
 		$scope.dt = new Date();
 	};
@@ -142,6 +166,54 @@ function($scope, $modalInstance, projects) {
 		$scope.name = '';
 		$scope.jira_URL = '';
 		$scope.start_date = '';
+		
+		$modalInstance.close();
+	};
+}]).controller('MwdModalCtrl', [
+'$scope',
+'$modalInstance',
+'mwds',
+function($scope, $modalInstance, mwds) {
+	$scope.mwds = mwds.mwds;
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
+
+	$scope.clear = function() {
+		$scope.dt = null;
+	};
+
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
+
+	$scope.openDP = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
+
+		$scope.opened = true;
+	};
+
+	$scope.dateOptions = {
+		formatYear : 'yy',
+		startingDay : 1
+	};
+
+	$scope.formats = [ 'dd-MM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate' ];
+	$scope.format = $scope.formats[0];
+	
+	$scope.addMwd = function() {
+		if ($scope.name === '') {
+			return;
+		}
+		mwds.create({
+			name : $scope.name,
+			issueDate : $scope.issueDate
+		});
+		$scope.name = '';
+		$scope.issueDate = '';
 		
 		$modalInstance.close();
 	};
