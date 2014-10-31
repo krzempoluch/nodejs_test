@@ -2,9 +2,9 @@
 <head>
 <title>Test Angulara</title>
 <link href="/stylesheets/Bootstrap/css/bootstrap.min.css" rel="stylesheet">
-<script src="/javascripts/Angular/1.3.0/angular.min.js"></script>
-<script
-	src="/javascripts/Angular/angular-ui-router/0.2.11/angular-ui-router.min.js"></script>
+<script src="/javascripts/Angular/1.2.x/angular.min.js"></script>
+<script src="/javascripts/Angular/bootstrap-angular-ui/ui-bootstrap-tpls-0.11.2.min.js"></script>
+<script	src="/javascripts/Angular/angular-ui-router/0.2.11/angular-ui-router.min.js"></script>
 <script src="/javascripts/angularControllers.js"></script>
 <style>
 .glyphicon-thumbs-up {
@@ -45,22 +45,29 @@
 			<h1>Projekty</h1>
 		</div>
 
-		<div ng-repeat="post in posts">
-			{{post}}
+		<div ng-repeat="project in projects">
+			{{project}}
 		</div>
-
+		<div class="col-md-6">
 		<form ng-submit="addPost()" style="margin-top: 30px;">
-			<h3>Add a new post</h3>
+			<h3>Dodaj projekt</h3>
 
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Title"
-					ng-model="title"></input>
+				<input type="text" class="form-control" placeholder="Nazwa" ng-model="name"></input>
 			</div>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="Link"
-					ng-model="link"></input>
+				<input type="text" class="form-control" placeholder="jira URL" ng-model="jira_URL"></input>
 			</div>
-			<button type="submit" class="btn btn-primary">Post</button>
+			<div ng-controller="DatepickerCtrl">
+            <p class="input-group">
+              	<input type="text" class="form-control" datepicker-popup="{{format}}" ng-model="dt" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
+              	<span class="input-group-btn">
+              		  <button type="button" class="btn btn-default" ng-click="open($event)"><i class="glyphicon glyphicon-calendar"></i></button>
+              	</span>
+            </p>
+			</div>
+			<button type="submit" class="btn btn-primary">Dodaj</button>
+		</div>
 		</form>
  </script> 
  <script type="text/ng-template" id="/mwd.html">

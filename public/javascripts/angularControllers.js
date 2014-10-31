@@ -1,4 +1,4 @@
-angular.module('projectMWD', ['ui.router'])
+angular.module('projectMWD', ['ui.router', 'ui.bootstrap'])
 .config([
 '$stateProvider',
 '$urlRouterProvider',
@@ -8,7 +8,12 @@ function($stateProvider, $urlRouterProvider) {
     .state('home', {
       url: '/home',
       templateUrl: '/home.html',
-      controller: 'MainCtrl'
+      controller: 'MainCtrl',
+      resolve: {
+    	  postPromise: ['projects', function(projects){
+    	    return projects.getAll();
+    	  }]
+    	}
     })
   .state('mwd', {
 	  url: '/mwd',
@@ -18,20 +23,20 @@ function($stateProvider, $urlRouterProvider) {
   
   $urlRouterProvider.otherwise('home');
 }])
-//.factory('posts', [ '$http', function($http) {
-//	var o = {
-//		posts : []
-//	};
-//	o.getAll = function() {
-//		return $http.get('/posts').success(function(data) {
-//			angular.copy(data, o.posts);
-//		});
-//	};
-//	o.create = function(post) {
-//		return $http.post('/posts', post).success(function(data) {
-//			o.posts.push(data);
-//		});
-//	};
+.factory('projects', [ '$http', function($http) {
+	var o = {
+		projects : []
+	};
+	o.getAll = function() {
+		return $http.get('/projects').success(function(data) {
+			angular.copy(data, o.projects);
+		});
+	};
+	o.create = function(post) {
+		return $http.post('/projects', post).success(function(data) {
+			o.projects.push(data);
+		});
+	};
 //	o.upvote = function(post) {
 //		  return $http.put('/posts/' + post.id + '/upvote')
 //		    .success(function(data){
@@ -46,14 +51,14 @@ function($stateProvider, $urlRouterProvider) {
 //	o.addComment = function(id, comment) {
 //		  return $http.post('/posts/' + id + '/comments', comment);
 //		};
-//	return o;
-//} ])
+	return o;
+} ])
 .controller('MainCtrl',[ 
 '$scope',
-function($scope, posts) {
-			$scope.test = 'Hello world!';
-			$scope.posts = ['post1'];
-			$scope.addPost = function() {
+'projects',
+function($scope, projects) {
+			$scope.projects = projects.projects;
+			$scope.addProject = function() {
 				if ($scope.title === '') {
 					return;
 				}
@@ -71,4 +76,34 @@ function($scope, posts) {
 function($scope, posts, post){
 	
 }])
-;
+.controller('DatepickerCtrl', function ($scope) {
+	  $scope.today = function() {
+	    $scope.dt = new Date();
+	  };
+	  $scope.today();
+
+	  $scope.clear = function () {
+	    $scope.dt = null;
+	  };
+
+
+	  $scope.toggleMin = function() {
+	    $scope.minDate = $scope.minDate ? null : new Date();
+	  };
+	  $scope.toggleMin();
+
+	  $scope.open = function($event) {
+	    $event.preventDefault();
+	    $event.stopPropagation();
+
+	    $scope.opened = true;
+	  };
+
+	  $scope.dateOptions = {
+	    formatYear: 'yy',
+	    startingDay: 1
+	  };
+
+	  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
+	  $scope.format = $scope.formats[0];
+	});

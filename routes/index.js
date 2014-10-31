@@ -11,20 +11,20 @@ router.get('/', function(req, res) {
 module.exports = router;
 
 var dao = require('../models/projectDao.js');
-var Post = dao.model('Post');
-var Comment = dao.model('Comment');
+var Project = dao.model('Project');
+var MWD = dao.model('MWD');
 
-router.get('/posts', function(req, res, next) {
-	Post.findAll().complete(function(err, posts) {
+router.get('/projects', function(req, res, next) {
+	Project.findAll().complete(function(err, posts) {
 		if (err) {
 			return next(err);
 		}
 		res.json(posts);
 	});
 });
-router.post('/posts', function(req, res, next) {
-	  var post = Post.build(req.body)
-	  post
+router.post('/projects', function(req, res, next) {
+	  var project = Project.build(req.body)
+	  project
 	  .save()
 	  .complete(function(err, post){
 	    if(err){ 
