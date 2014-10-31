@@ -26,12 +26,32 @@ router.post('/projects', function(req, res, next) {
 	  var project = Project.build(req.body)
 	  project
 	  .save()
-	  .complete(function(err, post){
+	  .complete(function(err, project){
 	    if(err){ 
 	    	console.log(err)
 	    	return next(err); 
 	    }
-	    res.json(req.body);
+	    res.json(project);
+	  });
+	});
+router.get('/mwds', function(req, res, next) {
+	MWD.findAll().complete(function(err, mwds) {
+		if (err) {
+			return next(err);
+		}
+		res.json(mwds);
+	});
+});
+router.post('/mwds', function(req, res, next) {
+	  var mwd = MWD.build(req.body)
+	  mwd
+	  .save()
+	  .complete(function(err, mwd){
+	    if(err){ 
+	    	console.log(err)
+	    	return next(err); 
+	    }
+	    res.json(mwd);
 	  });
 	});
 router.param('post', function(req, res, next, postId) {

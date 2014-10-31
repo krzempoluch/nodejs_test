@@ -1,4 +1,4 @@
-angular.module('projectMWD', ['ui.router', 'ui.bootstrap'])
+angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
 .config([
 '$stateProvider',
 '$urlRouterProvider',
@@ -18,7 +18,12 @@ function($stateProvider, $urlRouterProvider) {
   .state('mwd', {
 	  url: '/mwd',
 	  templateUrl: '/mwd.html',
-	  controller: 'MwdCtrl'
+	  controller: 'MwdCtrl',
+	  resolve: {
+    	  postPromise: ['mwds', function(mwds){
+    	    return mwds.getAll();
+    	  }]
+    	}
 	});
   
   $urlRouterProvider.otherwise('home');
@@ -53,57 +58,91 @@ function($stateProvider, $urlRouterProvider) {
 //		};
 	return o;
 } ])
+.factory('mwds', [ '$http', function($http) {
+	var o = {
+			mwds : []
+		};
+	o.getAll = function() {
+		return $http.get('/mwds').success(function(data) {
+			angular.copy(data, o.mwds);
+		});
+	};
+	return o;
+} ])
 .controller('MainCtrl',[ 
 '$scope',
+'$modal',
 'projects',
-function($scope, projects) {
-			$scope.projects = projects.projects;
-			$scope.addProject = function() {
-				if ($scope.title === '') {
-					return;
-				}
-				$scope.posts.push({
-					title : $scope.title,
-					link : $scope.link,
-					upvotes : 0,
-				});
-				$scope.title = '';
-				$scope.link = '';
+function($scope, $modal, projects) {
+	$scope.projects = projects.projects;
+	$scope.gridOptions = {
+			  enableScrollbars: false,
+			  data: $scope.projects
 			};
-		} ])
+	$scope.openAdd = function (size) {
+	    var modalInstance = $modal.open({
+	      templateUrl: 'addProject.html',
+	      controller: 'ModalCtrl'
+	      })
+	};
+} ])
 .controller('MwdCtrl', [
 '$scope',
-function($scope, posts, post){
-	
+'mwds',
+function($scope, mwds){
+	$scope.mwds = mwds.mwds;
+	$scope.gridOptions = {
+			  enableScrollbars: false,
+			  data: $scope.mwds
+			};
 }])
-.controller('DatepickerCtrl', function ($scope) {
-	  $scope.today = function() {
-	    $scope.dt = new Date();
-	  };
-	  $scope.today();
+.controller('ModalCtrl', [
+'$scope',
+'$modalInstance',
+'projects',
+function($scope, $modalInstance, projects) {
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
 
-	  $scope.clear = function () {
-	    $scope.dt = null;
-	  };
+	$scope.clear = function() {
+		$scope.dt = null;
+	};
 
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
 
-	  $scope.toggleMin = function() {
-	    $scope.minDate = $scope.minDate ? null : new Date();
-	  };
-	  $scope.toggleMin();
+	$scope.openDP = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
 
-	  $scope.open = function($event) {
-	    $event.preventDefault();
-	    $event.stopPropagation();
+		$scope.opened = true;
+	};
 
-	    $scope.opened = true;
-	  };
+	$scope.dateOptions = {
+		formatYear : 'yy',
+		startingDay : 1
+	};
 
-	  $scope.dateOptions = {
-	    formatYear: 'yy',
-	    startingDay: 1
-	  };
-
-	  $scope.formats = ['dd-MMMM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate'];
-	  $scope.format = $scope.formats[0];
-	});
+	$scope.formats = [ 'dd-MM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate' ];
+	$scope.format = $scope.formats[0];
+	
+	$scope.addProject = function() {
+		if ($scope.name === '') {
+			return;
+		}
+		projects.create({
+			name : $scope.name,
+			jira_URL : $scope.jira_URL,
+			start_date : $scope.start_date
+		});
+		$scope.name = '';
+		$scope.jira_URL = '';
+		$scope.start_date = '';
+		
+		$modalInstance.close();
+	};
+}]);
