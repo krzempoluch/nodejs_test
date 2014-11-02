@@ -106,7 +106,7 @@ function($scope, $modal, projects) {
 '$modal',
 'mwds',
 function($scope, $modal, mwds){
-	$scope.mwds = mwds.getAll();
+	$scope.mwds = mwds.mwds;
 	$scope.gridOptions = {
 			  enableScrollbars: false,
 			  data: $scope.mwds
@@ -124,7 +124,7 @@ function($scope, $modal, mwds){
 'projects',
 'mwds',
 function($scope, $modalInstance, projects, mwds) {
-	$scope.mwds = mwds.getAll();
+	$scope.mwds = mwds.mwds;
 	$scope.today = function() {
 		$scope.dt = new Date();
 	};
