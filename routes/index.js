@@ -14,6 +14,25 @@ var dao = require('../models/projectDao.js');
 var Project = dao.model('Project');
 var MWD = dao.model('MWD');
 
+MWD.getMwds = function(mwds){
+	var mwdsDao = [];
+	console.log("Mwd  w funkcji: %j", mwds);
+	for (mwd in mwds) {
+		mwd = JSON.parse(mwd);
+		console.log("Mwd  w petli: %j", mwd);
+		MWD
+		.find({ where: {id: mwd.id}})
+		.complete(function (err, mwd){
+		   if (err) { return mwdsDao; }
+		   if (mwd) {
+		   	console.log(mwd);
+		   	mwdsDao.push(mwd);
+		   }
+		});
+	}
+	return mwdsDao;
+};
+
 router.get('/projects', function(req, res, next) {
 	Project.findAll().complete(function(err, posts) {
 		if (err) {
@@ -30,6 +49,11 @@ router.post('/projects', function(req, res, next) {
 	    if(err){ 
 	    	console.log(err)
 	    	return next(err); 
+	    }
+	    console.log("MWD w JSONie tworzacym projekt: %j", req.body.mwds);
+	    var mwds = MWD.getMwds(req.body.mwds);
+	    for(mwd in mwds){
+	    	project.addMWDs(mwd);
 	    }
 	    res.json(project);
 	  });
@@ -53,6 +77,19 @@ router.post('/mwds', function(req, res, next) {
 	    }
 	    res.json(mwd);
 	  });
+	});
+router.param('mwd', function(req, res, next, mwdId) {
+	  var mwd = MWD
+	  .find({ where: {id: mwdId}})
+	  .complete(function (err, mwd){
+	    if (err) { return next(err); }
+	    if (!mwd) { return next(new Error("can't find mwds")); }
+	    req.mwd = mwd;
+	    return next();
+	  });
+	});
+router.get('/mwd/:mwd', function(req, res) {
+	  res.json(req.mwd);
 	});
 router.param('post', function(req, res, next, postId) {
 	  Post

@@ -155,7 +155,8 @@ function($scope, $modalInstance, projects, mwds) {
 		projects.create({
 			name : $scope.name,
 			jira_URL : $scope.jira_URL,
-			start_date : $scope.start_date
+			start_date : $scope.start_date,
+			mwds: $scope.mwdsInProject
 		});
 		$scope.name = '';
 		$scope.jira_URL = '';
@@ -164,8 +165,7 @@ function($scope, $modalInstance, projects, mwds) {
 		$modalInstance.close();
 	};
 	$scope.addMwdToProject = function(mwd) {
-		console.log(mwd);
-		$scope.mwdsInProject.push(mwd.name);
+		$scope.mwdsInProject.push(mwd);
 	};
 
 }]).controller('MwdModalCtrl', [

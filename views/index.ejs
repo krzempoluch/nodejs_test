@@ -60,7 +60,7 @@
 				<input type="text" class="form-control" placeholder="Nazwa" ng-model="name"></input>
 			</div>
 			<div class="form-group">
-				<input type="text" class="form-control" placeholder="jira URL" ng-model="jira_URL"></input>
+				<input type="url" class="form-control" placeholder="jira URL" ng-model="jira_URL"></input>
 			</div>
             <p class="input-group">
               	<input type="text" class="form-control" placeholder="Data rozpoczecia projektu" datepicker-popup="{{format}}" ng-model="start_date" is-open="opened" min-date="minDate" max-date="'2015-06-22'" datepicker-options="dateOptions" date-disabled="disabled(date, mode)" ng-required="true" close-text="Close" />
@@ -70,7 +70,7 @@
             </p>
 			<ul>
 				<div data-ng-repeat="mwdInProject in mwdsInProject">
-					<li>{{mwdInProject}}</li>
+					<li>{{mwdInProject.name}}</li>
 				</div>
 			</ul>
 			<div class="btn-group" dropdown is-open="status.isopen">
