@@ -14,27 +14,29 @@ var dao = require('../models/projectDao.js');
 var Project = dao.model('Project');
 var MWD = dao.model('MWD');
 
-MWD.getMwds = function(mwds){
-	var mwdsDao = [];
-	console.log("Mwd  w funkcji: %j", mwds);
-	for (mwd in mwds) {
-		mwd = JSON.parse(mwd);
-		console.log("Mwd  w petli: %j", mwd);
-		MWD
-		.find({ where: {id: mwd.id}})
-		.complete(function (err, mwd){
-		   if (err) { return mwdsDao; }
-		   if (mwd) {
-		   	console.log(mwd);
-		   	mwdsDao.push(mwd);
-		   }
-		});
+MWD.addMwdsToProject = function(mwds, project) {
+	var ids = [];
+	for (var i = 0; i < mwds.length; i++) {
+		ids.push(mwds[i].id);
 	}
-	return mwdsDao;
+	MWD.findAll({
+		where : {
+			id : ids
+		}
+	}).complete(function(err, mwds) {
+		if (err) {
+			return [];
+		}
+		if (mwds) {
+			project.addMWDs(mwds);
+		}
+	});
 };
 
 router.get('/projects', function(req, res, next) {
-	Project.findAll().complete(function(err, posts) {
+	Project
+	.findAll({include: [MWD]})
+	.complete(function(err, posts) {
 		if (err) {
 			return next(err);
 		}
@@ -50,16 +52,14 @@ router.post('/projects', function(req, res, next) {
 	    	console.log(err)
 	    	return next(err); 
 	    }
-	    console.log("MWD w JSONie tworzacym projekt: %j", req.body.mwds);
-	    var mwds = MWD.getMwds(req.body.mwds);
-	    for(mwd in mwds){
-	    	project.addMWDs(mwd);
-	    }
+	    MWD.addMwdsToProject(req.body.mwds, project);
 	    res.json(project);
 	  });
 	});
 router.get('/mwds', function(req, res, next) {
-	MWD.findAll().complete(function(err, mwds) {
+	MWD
+	.findAll()
+	.complete(function(err, mwds) {
 		if (err) {
 			return next(err);
 		}
@@ -90,6 +90,19 @@ router.param('mwd', function(req, res, next, mwdId) {
 	});
 router.get('/mwd/:mwd', function(req, res) {
 	  res.json(req.mwd);
+	});
+router.param('project', function(req, res, next, projectId) {
+	  var project = Project
+	  .find({ where: {id: projectId}, include: [MWD]})
+	  .complete(function (err, project){
+	    if (err) { return next(err); }
+	    if (!project) { return next(new Error("can't find project")); }
+	    req.project = project;
+	    return next();
+	  });
+	});
+router.get('/projects/:project', function(req, res) {
+	  res.json(req.project);
 	});
 router.param('post', function(req, res, next, postId) {
 	  Post

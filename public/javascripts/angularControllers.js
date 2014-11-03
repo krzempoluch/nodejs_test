@@ -3,7 +3,6 @@ angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
 '$stateProvider',
 '$urlRouterProvider',
 function($stateProvider, $urlRouterProvider) {
-
   $stateProvider
     .state('home', {
       url: '/home',
@@ -26,6 +25,16 @@ function($stateProvider, $urlRouterProvider) {
     	  mwdsPromise: function(mwds){
     	    return mwds.getAll();
     	  }
+    	}
+	})
+	.state('project', {
+	  url: '/projects/{id}',
+	  templateUrl: '/project.html',
+	  controller: 'ProjectCtrl',
+	  resolve: {
+		  project: ['$stateParams', 'projects', function($stateParams, projects) {
+			    return projects.get($stateParams.id);
+			  }]
     	}
 	});
   
@@ -51,11 +60,11 @@ function($stateProvider, $urlRouterProvider) {
 //		      post.upvotes += 1;
 //		    });
 //		};
-//	o.get = function(id) {
-//		return $http.get('/posts/' + id).then(function(res){
-//			return res.data;
-//		});
-//	};
+	o.get = function(id) {
+		return $http.get('/projects/' + id).then(function(res){
+			return res.data;
+		});
+	};
 //	o.addComment = function(id, comment) {
 //		  return $http.post('/posts/' + id + '/comments', comment);
 //		};
@@ -85,7 +94,21 @@ function($scope, $modal, projects) {
 	$scope.projects = projects.projects;
 	$scope.gridOptions = {
 			  enableScrollbars: false,
-			  data: $scope.projects
+			  data: $scope.projects,
+			  columnDefs:[
+			              {field: 'name', displayName: 'Nazwa'},
+			              {field: 'jira_URL', displayName: 'URL'},
+			              {field: 'start_date', displayName: 'Data'},
+			              {field: 'MWDs', displayName: 'MWD', 
+			            	 cellTemplate:
+			            	'<div style=" height: 100% !important; "><ul><div  ng-repeat="mwdInProject in row.entity.MWDs">'+
+								'<li>{{mwdInProject.name}}</li>'+
+							'</div></ul></div>'
+			              },
+			              {field: 'Actions', displayName: '', 
+				            	 cellTemplate:
+				            	'<a href="#/projects/{{row.entity.id}}">Edycja</a>'
+				              }]
 			};
 	$scope.openAdd = function (size) {
 	    var modalInstance = $modal.open({
@@ -102,7 +125,10 @@ function($scope, $modal, mwds){
 	$scope.mwds = mwds.mwds;
 	$scope.gridOptions = {
 			  enableScrollbars: false,
-			  data: $scope.mwds
+			  data: $scope.mwds,
+			  columnDefs:[
+			              {field: 'name', displayName: 'Nazwa'},
+			              {field: 'issueDate', displayName: 'Data'}]
 			};
 	$scope.openAdd = function (size) {
 	    var modalInstance = $modal.open({
@@ -110,6 +136,13 @@ function($scope, $modal, mwds){
 	      controller: 'MwdModalCtrl'
 	      })
 	};
+}])
+.controller('ProjectCtrl', [
+'$scope',
+'projects',
+'project',
+function($scope, projects, project){
+	$scope.project = project;
 }])
 .controller('ProjectModalCtrl', [
 '$scope',
