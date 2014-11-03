@@ -10,9 +10,12 @@ function($stateProvider, $urlRouterProvider) {
       templateUrl: '/home.html',
       controller: 'MainCtrl',
       resolve: {
-    	  postPromise: ['projects', function(projects){
+    	  projectPromise: function(projects){
     	    return projects.getAll();
-    	  }]
+    	  },
+    	  mwdPromise: function(mwds){
+      	    return mwds.getAll();
+      	  }
     	}
     })
   .state('mwd', {
@@ -20,19 +23,9 @@ function($stateProvider, $urlRouterProvider) {
 	  templateUrl: '/mwd.html',
 	  controller: 'MwdCtrl',
 	  resolve: {
-    	  postPromise: ['mwds', function(mwds){
+    	  mwdsPromise: function(mwds){
     	    return mwds.getAll();
-    	  }]
-    	}
-	})
-	.state('homeAddProject', {
-	  url: '/addProject.html',
-	  templateUrl: '/addProject.html',
-	  controller: 'ProjectModalCtrl',
-	  resolve: {
-    	  postPromise: ['mwds', function(mwds){
-    	    return mwds.getAll();
-    	  }]
+    	  }
     	}
 	});
   
@@ -125,6 +118,7 @@ function($scope, $modal, mwds){
 'mwds',
 function($scope, $modalInstance, projects, mwds) {
 	$scope.mwds = mwds.mwds;
+	$scope.mwdsInProject = [];
 	$scope.today = function() {
 		$scope.dt = new Date();
 	};
@@ -169,6 +163,11 @@ function($scope, $modalInstance, projects, mwds) {
 		
 		$modalInstance.close();
 	};
+	$scope.addMwdToProject = function(mwd) {
+		console.log(mwd);
+		$scope.mwdsInProject.push(mwd.name);
+	};
+
 }]).controller('MwdModalCtrl', [
 '$scope',
 '$modalInstance',

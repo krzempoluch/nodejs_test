@@ -9,11 +9,6 @@
 <script	src="/javascripts/Angular/angular-ui-router/0.2.11/angular-ui-router.min.js"></script>
 <script src="/javascripts/Angular/ui-grid/ui-grid.js"></script>
 <script src="/javascripts/angularControllers.js"></script>
-<style>
-.glyphicon-thumbs-up {
-	cursor: pointer
-}
-</style>
 </head>
 <body ng-app="projectMWD">
 	<div class="container">
@@ -73,17 +68,20 @@
               		  <button type="button" class="btn btn-default" ng-click="openDP($event)"><i class="glyphicon glyphicon-calendar" style="line-height: 1.45;"></i></button>
               	</span>
             </p>
+			<ul>
+				<div data-ng-repeat="mwdInProject in mwdsInProject">
+					<li>{{mwdInProject}}</li>
+				</div>
+			</ul>
 			<div class="btn-group" dropdown is-open="status.isopen">
-      		<button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled">
-        	Dodaj MWD <span class="caret"></span>
-      		</button>
-     		 <ul class="dropdown-menu" role="menu">
+      		<button type="button" class="btn btn-primary dropdown-toggle" ng-disabled="disabled"> Dodaj MWD <span class="caret"></span></button>
+     		<ul class="dropdown-menu" role="menu">
 				<div data-ng-repeat="mwd in mwds">
-        			<li><a href="#">{{mwd.name}}</a></li>
+        			<li ng-click="addMwdToProject(mwd)">{{mwd.name}}</li>
 				</div>
       		</ul>
     		</div>
-			<button type="submit" class="btn btn-primary">Dodaj</button>
+			<button type="submit" style="float: right;" class="btn btn-primary">Dodaj</button>
 		</form>
     </script>
     <script type="text/ng-template" id="addMwd.html">
