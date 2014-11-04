@@ -30,7 +30,11 @@ MWD.addMwdsToProject = function(mwds, project, next) {
 		if (mwds) {
 			project.addMWDs(mwds)
 			.complete(function(){
-				next();
+				Project
+				.find({where: {id: project.id}, include: [MWD]})
+				.complete(function (err, projectUpdated){
+					next(projectUpdated);
+				});
 			});
 		}
 	});
@@ -73,8 +77,8 @@ router.post('/projects', function(req, res, next) {
 	    	return next(err); 
 	    }
 	    MWD.addMwdsToProject(req.body.mwds, project,
-	    	function(){
-	  			res.json(updateProject); 
+	    	function(updatedProject){
+	  			res.json(updatedProject); 
 	    });
 	  });
 	});
