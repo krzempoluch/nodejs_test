@@ -11,34 +11,32 @@
 <script src="/javascripts/angularControllers.js"></script>
 </head>
 <body ng-app="projectMWD">
-	<div class="container">
-		<nav class="navbar navbar-default" role="navigation">
-        <div class="container-fluid">
-          <div class="navbar-header">
-            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
-              <span class="sr-only">Menu</span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-              <span class="icon-bar"></span>
-            </button>
-            <a class="navbar-brand" href="#">Node.js</a>
-          </div>
-          <div id="navbar" class="navbar-collapse collapse" aria-expanded="false" style="height: 1px;">
-            <ul class="nav navbar-nav navbar-right">
-              <li><a href="#/home">Projekty</a></li>
-              <li><a href="#/mwd">mwd</a></li>
-            </ul>
-          </div><!--/.nav-collapse -->
-        </div><!--/.container-fluid -->
-      </nav>
-		<div class="row">
-			<div class="col-md-10 col-md-offset-1">
-				<ui-view></ui-view>
-			</div>
+	<nav class="col-md-10 col-md-offset-1 navbar navbar-default" role="navigation">
+		<!-- Brand and toggle get grouped for better mobile display -->
+		<div class="navbar-header">
+			<button type="button" class="navbar-toggle"
+				ng-click="navbarCollapsed = !navbarCollapsed">
+				<span class="sr-only">Menu</span> <span class="icon-bar"></span> <span
+					class="icon-bar"></span> <span class="icon-bar"></span>
+			</button>
+			<a class="navbar-brand" href="#">Node.js</a>
+		</div>
+
+		<!-- Collect the nav links, forms, and other content for toggling -->
+		<div class="collapse navbar-collapse" collapse="navbarCollapsed">
+			<ul class="nav navbar-nav navbar-right">
+				<li><a href="#/home">Projekty</a></li>
+				<li><a href="#/mwd">mwd</a></li>
+			</ul>
+		</div>
+	</nav>
+
+	<div class="row">
+		<div class="col-md-10 col-md-offset-1">
+			<ui-view></ui-view>
 		</div>
 	</div>
-
- <script type="text/ng-template" id="/home.html">
+<script type="text/ng-template" id="/home.html">
 		<div class="page-header">
 			<h1 style=" display: inline; ">Projekty</h1>
 			<button class="btn btn-primary" style=" float: right; " ng-click="openAdd()">+ Dodaj</button>
