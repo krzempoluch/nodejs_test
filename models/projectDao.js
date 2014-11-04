@@ -40,6 +40,7 @@ var singleton = function singleton(){
 	this.init = function init(){
 		connect();
 		//----------Inicjalizacja Encji
+		console.log("==================================== path projektDao: "+__dirname + entityDefinitionsPath);
 		filesystem.readdirSync(__dirname + entityDefinitionsPath).forEach(function(name){
 	        var object = require(__dirname + entityDefinitionsPath + "/" + name);
 	        var atributes = object.EntityAtributes || {};
