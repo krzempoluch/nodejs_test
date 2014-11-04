@@ -40,8 +40,8 @@ var singleton = function singleton(){
 	this.init = function init(){
 		connect();
 		//----------Inicjalizacja Encji
-		filesystem.readdirSync(__dirname + "\\" + entityDefinitionsPath).forEach(function(name){
-	        var object = require(__dirname + "\\" + entityDefinitionsPath + "\\" + name);
+		filesystem.readdirSync(__dirname + entityDefinitionsPath).forEach(function(name){
+	        var object = require(__dirname + entityDefinitionsPath + "/" + name);
 	        var atributes = object.EntityAtributes || {};
 	        var modelName = object.EntityName;
 	        models[modelName] = sequelize.define(modelName, atributes);
