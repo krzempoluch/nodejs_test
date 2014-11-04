@@ -4,7 +4,7 @@ var router = express.Router();
 /* GET home page. */
 router.get('/', function(req, res) {
 	res.render('index', {
-		title : 'Flapper-News'
+		title : 'Projekty'
 	});
 });
 
@@ -14,7 +14,7 @@ var dao = require('../models/projectDao.js');
 var Project = dao.model('Project');
 var MWD = dao.model('MWD');
 
-MWD.addMwdsToProject = function(mwds, project) {
+MWD.addMwdsToProject = function(mwds, project, next) {
 	var ids = [];
 	for (var i = 0; i < mwds.length; i++) {
 		ids.push(mwds[i].id);
@@ -25,13 +25,33 @@ MWD.addMwdsToProject = function(mwds, project) {
 		}
 	}).complete(function(err, mwds) {
 		if (err) {
-			return [];
+			next(err);
 		}
 		if (mwds) {
-			project.addMWDs(mwds);
+			project.addMWDs(mwds)
+			.complete(function(){
+				next();
+			});
 		}
 	});
 };
+Project.removeChildrens = function(project, mwds, next){
+	for(var i=0;i<mwds.length;i++){
+		project
+		.removeMWD(mwds[i])
+		.complete(function(){
+			Project
+			.find({where: {id: project.id}, include: [MWD]})
+			.complete(function (err, projectUpdate){
+			    if (err) { return next(err); }
+			    if (!projectUpdate) { return next(new Error("can't find project")); }
+			    if(projectUpdate.MWDs.length<1){
+			    	next();
+			    }
+			  });
+		});
+	}
+}
 
 router.get('/projects', function(req, res, next) {
 	Project
@@ -52,8 +72,10 @@ router.post('/projects', function(req, res, next) {
 	    	console.log(err)
 	    	return next(err); 
 	    }
-	    MWD.addMwdsToProject(req.body.mwds, project);
-	    res.json(project);
+	    MWD.addMwdsToProject(req.body.mwds, project,
+	    	function(){
+	  			res.json(updateProject); 
+	    });
 	  });
 	});
 router.get('/mwds', function(req, res, next) {
@@ -104,39 +126,27 @@ router.param('project', function(req, res, next, projectId) {
 router.get('/projects/:project', function(req, res) {
 	  res.json(req.project);
 	});
-router.param('post', function(req, res, next, postId) {
-	  Post
-	  .find({ where: {id: postId}, include: [Comment]})
-	  .complete(function (err, post){
-	    if (err) { return next(err); }
-	    if (!post) { return next(new Error("can't find post")); }
-
-	    req.post = post;
-	    return next();
-	  });
-	});
-router.get('/posts/:post', function(req, res) {
-	  res.json(req.post);
-	});
-router.put('/posts/:post/upvote', function(req, res, next) {
-	  var updatedPost = req.post;
-	  var newUpvotes = updatedPost.upvotes;
-	  newUpvotes=newUpvotes+1;
-	  updatedPost.updateAttributes({
-		  upvotes: newUpvotes
-	  }).complete(function (err, post){
+router.post('/projects/:project/edit', function(req, res) {
+	  var updateProject = req.project;
+	  updateProject.updateAttributes({
+		  name: req.body.name,
+		  jira_URL: req.body.jira_URL,
+		  start_date: req.body.start_date
+	  }).complete(function (err, project){
 		  if (err) { return next(err); }
-		  res.json(updatedPost);
+		  var mwds = updateProject.MWDs;
+		  if(mwds.length<1){
+			  MWD.addMwdsToProject(req.body.mwds, updateProject,
+					  function(){
+				  		res.json(updateProject); 
+				  		return;
+			  });
+		  }
+		  Project.removeChildrens(updateProject, mwds, function(){
+			  MWD.addMwdsToProject(req.body.mwds, updateProject,
+					  function(){
+				  		return res.json(updateProject); 
+			  });
+		  });
 	  });
-	});
-router.post('/posts/:post/comments', function(req, res, next) {
-	  var comment = Comment.build(req.body);
-	  var post = req.post;
-	  comment
-	  .save()
-	  .complete(function(err, comment){
-	    if(err){ return next(err); }
-	    post.addComments(comment);
-	    res.json(comment);
-	    });
 	});

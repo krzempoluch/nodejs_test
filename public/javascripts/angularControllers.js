@@ -34,7 +34,10 @@ function($stateProvider, $urlRouterProvider) {
 	  resolve: {
 		  project: ['$stateParams', 'projects', function($stateParams, projects) {
 			    return projects.get($stateParams.id);
-			  }]
+		  }],
+		  mwdsPromise: function(mwds){
+		    	return mwds.getAll();
+		  }
     	}
 	});
   
@@ -49,17 +52,17 @@ function($stateProvider, $urlRouterProvider) {
 			angular.copy(data, o.projects);
 		});
 	};
-	o.create = function(post) {
-		return $http.post('/projects', post).success(function(data) {
+	o.create = function(project) {
+		return $http.post('/projects', project).success(function(data) {
 			o.projects.push(data);
 		});
 	};
-//	o.upvote = function(post) {
-//		  return $http.put('/posts/' + post.id + '/upvote')
-//		    .success(function(data){
-//		      post.upvotes += 1;
-//		    });
-//		};
+	o.edit = function(project) {
+		  return $http.post('/projects/' + project.id + '/edit', project)
+		    .success(function(data){
+		      
+		    });
+		};
 	o.get = function(id) {
 		return $http.get('/projects/' + id).then(function(res){
 			return res.data;
@@ -141,8 +144,54 @@ function($scope, $modal, mwds){
 '$scope',
 'projects',
 'project',
-function($scope, projects, project){
+'mwds',
+function($scope, projects, project, mwds){
 	$scope.project = project;
+	$scope.name = project.name;
+	$scope.jira_URL = project.jira_URL;
+	$scope.start_date = project.start_date;
+	$scope.mwds = mwds.mwds;
+	$scope.mwdsInProject = project.MWDs;
+	$scope.today = function() {
+		$scope.dt = new Date();
+	};
+	$scope.today();
+
+	$scope.clear = function() {
+		$scope.dt = null;
+	};
+
+	$scope.toggleMin = function() {
+		$scope.minDate = $scope.minDate ? null : new Date();
+	};
+	$scope.toggleMin();
+
+	$scope.openDP = function($event) {
+		$event.preventDefault();
+		$event.stopPropagation();
+
+		$scope.opened = true;
+	};
+
+	$scope.dateOptions = {
+		formatYear : 'yy',
+		startingDay : 1
+	};
+
+	$scope.formats = [ 'dd-MM-yyyy', 'yyyy/MM/dd', 'dd.MM.yyyy', 'shortDate' ];
+	$scope.format = $scope.formats[0];
+	$scope.addMwdToProject = function(mwd) {
+		$scope.mwdsInProject.push(mwd);
+	};
+	$scope.editProject = function() {
+		projects.edit({
+			id : project.id,
+			name : $scope.name,
+			jira_URL : $scope.jira_URL,
+			start_date : $scope.start_date,
+			mwds: $scope.mwdsInProject
+		});
+	};
 }])
 .controller('ProjectModalCtrl', [
 '$scope',
