@@ -11,7 +11,9 @@ var singleton = function singleton(){
 	function connect(){
 		sequelize = new Sequelize(config.database.database_name, config.database.username, config.database.password, {
 		    dialect: config.database.database_engine, // or 'sqlite', 'postgres', 'mariadb'
+		    protocol: config.database.database_engine,
 		    port:    config.database.database_port, // or 5432 (for postgres)
+		    host: config.database.database_host,
 		  });
 		sequelize.authenticate().complete(function(err) {
 		  if (!!err) {

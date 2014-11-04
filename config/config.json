@@ -1,9 +1,10 @@
 {
     "database":{
-    	"database_engine": "mysql",
-    	"database_port": "3306",
-    	"database_name": "ress",
-    	"username": "root",
-    	"password": ""
+    	"database_engine": "postgres",
+    	"database_port": "5432",
+    	"database_name": "d1knmip8kstsuj",
+    	"database_host": "ec2-54-163-249-168.compute-1.amazonaws.com",
+    	"username": "rreelctgawyrrk",
+    	"password": "J2KIo7cshlryZP2WwMBTKTLOJW"
     }
 }
