@@ -48,23 +48,23 @@ function($stateProvider, $urlRouterProvider) {
 		projects : []
 	};
 	o.getAll = function() {
-		return $http.get('/projects').success(function(data) {
+		return $http.get('http://nodejsprojekty.herokuapp.com/projects').success(function(data) {
 			angular.copy(data, o.projects);
 		});
 	};
 	o.create = function(project) {
-		return $http.post('/projects', project).success(function(data) {
+		return $http.post('http://nodejsprojekty.herokuapp.com/projects', project).success(function(data) {
 			o.projects.push(data);
 		});
 	};
 	o.edit = function(project) {
-		  return $http.post('/projects/' + project.id + '/edit', project)
+		  return $http.post('http://nodejsprojekty.herokuapp.com/projects/' + project.id + '/edit', project)
 		    .success(function(data){
 		      
 		    });
 		};
 	o.get = function(id) {
-		return $http.get('/projects/' + id).then(function(res){
+		return $http.get('http://nodejsprojekty.herokuapp.com/projects/' + id).then(function(res){
 			return res.data;
 		});
 	};
