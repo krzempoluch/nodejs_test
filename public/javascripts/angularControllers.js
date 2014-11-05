@@ -1,4 +1,4 @@
-angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
+var myApp = angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
 .config([
 '$stateProvider',
 '$urlRouterProvider',
@@ -48,23 +48,23 @@ function($stateProvider, $urlRouterProvider) {
 		projects : []
 	};
 	o.getAll = function() {
-		return $http.get('/projects').success(function(data) {
+		return $http.get('http://nodejsprojekty.herokuapp.com/projects').success(function(data) {
 			angular.copy(data, o.projects);
 		});
 	};
 	o.create = function(project) {
-		return $http.post('/projects', project).success(function(data) {
+		return $http.post('http://nodejsprojekty.herokuapp.com/projects', project).success(function(data) {
 			o.projects.push(data);
 		});
 	};
 	o.edit = function(project) {
-		  return $http.post('/projects/' + project.id + '/edit', project)
+		  return $http.post('http://nodejsprojekty.herokuapp.com/projects/' + project.id + '/edit', project)
 		    .success(function(data){
 		      
 		    });
 		};
 	o.get = function(id) {
-		return $http.get('/projects/' + id).then(function(res){
+		return $http.get('http://nodejsprojekty.herokuapp.com/projects/' + id).then(function(res){
 			return res.data;
 		});
 	};
@@ -299,3 +299,9 @@ function($scope, $modalInstance, mwds) {
 		$modalInstance.close();
 	};
 }]);
+
+myApp.config(['$httpProvider', function($httpProvider) {
+    $httpProvider.defaults.useXDomain = true;
+    delete $httpProvider.defaults.headers.common['X-Requested-With'];
+}
+]);
