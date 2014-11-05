@@ -1,4 +1,4 @@
-var myApp = angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
+angular.module('projectMWD', ['ui.router', 'ui.bootstrap', 'ui.grid'])
 .config([
 '$stateProvider',
 '$urlRouterProvider',
@@ -299,9 +299,3 @@ function($scope, $modalInstance, mwds) {
 		$modalInstance.close();
 	};
 }]);
-
-myApp.config(['$httpProvider', function($httpProvider) {
-    $httpProvider.defaults.useXDomain = true;
-    delete $httpProvider.defaults.headers.common['X-Requested-With'];
-}
-]);
